@@ -1,5 +1,6 @@
 package example.in_continue_dev.config.securityConfig;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -15,8 +16,10 @@ import java.beans.BeanProperty;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
     private static final String[] NOCHECK = new String[]{"/login/**", "/oauth2/**"};
+    private final Oauth2Service oauth2Service;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -31,7 +34,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationSuccessHandler loginSuccessFilter() {
-        return new LoginSuccessFilter();
+        return new LoginSuccessFilter(oauth2Service);
     }
 }
 

@@ -1,6 +1,7 @@
 package example.in_continue_dev.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,11 +16,19 @@ public class Users {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String email;
-    private String userName;
-    private String nickName;
+
+    @Column(nullable = false)
+    private String name;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Builder
+    public Users(String email, String name, String mobile, Role role) {
+        this.email = email;
+        this.name = name;
+        this.role = role;
+    }
 }
