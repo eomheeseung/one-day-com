@@ -3,7 +3,7 @@ name: Build and Deploy Spring App
 on:
   push:
     branches:
-      - main  # main 브랜치에 푸시할 때마다 실행!
+      - deploy  # 여기서 bracnh의 이름을 바꿔주면 해당 브랜치가 action 됨
 
 jobs:
   build:
