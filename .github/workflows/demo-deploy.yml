@@ -14,10 +14,11 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v2 # 최신 버전으로 변경
+        uses: actions/setup-java@v2
         with:
           java-version: '17'
-          distribution: 'openjdk'     # OpenJDK 배포판
+          distribution: 'temurin'  # Temurin 배포판으로 변경
+
 
       - name: Build the project with Gradle
         run: ./gradlew build  # Gradle로 프로젝트 빌드
