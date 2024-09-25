@@ -14,9 +14,9 @@ jobs:
         image: mysql:latest  # MySQL 이미지 사용
         env:
           MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
-          MYSQL_USER: ${{ secrets.MYSQL_USER }}
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DATABASE: dev  # 데이터베이스 이름 수정
+          MYSQL_USER: root  # 기본 사용자 설정
+          MYSQL_PASSWORD: admin1234  # 기본 비밀번호 설정
         ports:
           - 3306:3306  # 포트 매핑
         options: >-
@@ -35,7 +35,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'  # Temurin 배포판으로 변경
 
-
       - name: Build the project with Gradle
         run: ./gradlew build  # Gradle로 프로젝트 빌드
 
@@ -52,6 +51,3 @@ jobs:
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/in-continue-dev:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/in-continue-dev:latest
-          
-
-  # Deploy step is omitted for local testing

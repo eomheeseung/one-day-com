@@ -6,10 +6,16 @@ services:
     environment:
       MYSQL_ROOT_USER: root
       MYSQL_ROOT_PASSWORD: admin1234
+      MYSQL_DATABASE: dev  # 생성할 데이터베이스 이름 추가
     ports:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+    healthcheck:  # 건강 체크 추가
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   spring-app:
     image: spring-boot-app:latest
@@ -18,13 +24,14 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysqlDB:3306/mysql
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqlDB:3306/dev  # 데이터베이스 이름 수정
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: admin1234
     ports:
       - "8080:8080"
     depends_on:
-      - db
+      db:
+        condition: service_healthy  # MySQL 서비스가 건강한지 확인
 
 volumes:
   db_data:
