@@ -21,9 +21,9 @@ jobs:
           - 3306:3306  # 포트 매핑
         options: >-
           --health-cmd="mysqladmin ping -h localhost"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
+#          --health-interval=10s
+#          --health-timeout=5s
+#          --health-retries=3
 
     steps:
       - name: Check out the repository
