@@ -1,8 +1,8 @@
 version: '3'
 services:
   db:
-    container_name: mysqlDB
     image: mysql:latest
+    container_name: mysqlDB
     environment:
       MYSQL_ROOT_NAME: root
       MYSQL_ROOT_PASSWORD: admin1234
@@ -10,6 +10,21 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+
+  spring-app:
+    image: spring-boot-app:latest
+    container_name: spring-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqlDB:3306/mysql
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: admin1234
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
 
 volumes:
   db_data:
