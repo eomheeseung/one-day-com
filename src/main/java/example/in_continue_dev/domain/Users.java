@@ -22,6 +22,9 @@ public class Users {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private String mobile;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -29,6 +32,7 @@ public class Users {
     public Users(String email, String name, String mobile, Role role) {
         this.email = email;
         this.name = name;
+        this.mobile = mobile;
         this.role = role;
     }
 }

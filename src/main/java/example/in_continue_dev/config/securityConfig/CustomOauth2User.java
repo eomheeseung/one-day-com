@@ -1,17 +1,15 @@
 package example.in_continue_dev.config.securityConfig;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.lang.annotation.Repeatable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-
-public class CustomOauth2User implements OAuth2User{
+@Slf4j
+public class CustomOauth2User implements OAuth2User {
     private final OAuth2User oAuth2User;
 
     public CustomOauth2User(OAuth2User oAuth2User) {
@@ -41,15 +39,38 @@ public class CustomOauth2User implements OAuth2User{
 
     public Map<String, Object> getUserInfo() {
         Map<String, Object> attributes = oAuth2User.getAttributes();
-        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
 
-        Object nickname = response.get("name");
-        Object email = response.get("email");
+        log.info("attributes: {}", attributes.toString());
 
-        Map<String, Object> userInfo = new HashMap<>();
-        userInfo.put("name", nickname);
-        userInfo.put("email", email);
+        Object response = attributes.get("response");
 
-        return userInfo;
+        // 타입이 LinkedHashMap인지를 먼저 확인
+        if (response instanceof LinkedHashMap) {
+            // Java에서 제네릭 타입의 런타임 확인은 불가능하므로, instanceof로 타입을 확인하고 unchecked cast 경고는 @SuppressWarnings("unchecked")로 해결
+            @SuppressWarnings("unchecked")
+            LinkedHashMap<String, Object> responseMap = (LinkedHashMap<String, Object>) response;
+            // 이제 responseMap을 안전하게 사용할 수 있습니다.
+            log.info("Successfully casted response to LinkedHashMap");
+
+            Object name = responseMap.get("name");
+            log.info("name: {}", name.toString());
+
+            Object email = responseMap.get("email");
+            Object mobile = responseMap.get("mobile");
+
+            Map<String, Object> userInfo = new HashMap<>();
+
+            // TODO mysql에 저장될 때 한글이 ???로 깨짐
+            userInfo.put("name", name);
+            userInfo.put("email", email);
+            userInfo.put("mobile", mobile);
+
+            return userInfo;
+        } else {
+            log.warn("response is not an instance of LinkedHashMap, actual type: {}", response.getClass().getName());
+            throw new RuntimeException("response is not an instance of LinkedHashMap, actual type");
+        }
+
+
     }
 }

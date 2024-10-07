@@ -41,7 +41,7 @@ public class Oauth2Service extends DefaultOAuth2UserService {
          확인해보자.
          */
         OAuth2AccessToken accessToken = userRequest.getAccessToken();
-        log.info(accessToken.toString());
+        log.info("accessToken:{}", accessToken.getTokenValue());
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
@@ -55,18 +55,21 @@ public class Oauth2Service extends DefaultOAuth2UserService {
     }
 
     private void saveUser(Map<String, Object> userInfo) {
-        String email = (String) userInfo.get("email");
-        String name = (String) userInfo.get("name");
+        String email = userInfo.get("email").toString();
+        String name = userInfo.get("name").toString();
+        String mobile = userInfo.get("mobile").toString();
 
         // 이메일로 사용자 조회 (이미 존재하는 사용자일 경우 저장하지 않음)
         Optional<Users> existingUser = usersRepository.findByEmail(email);
 
         if (existingUser.isEmpty()) {
             // 새로운 사용자 정보를 DB에 저장
+
             Users user = Users.builder()
                     .name(name)
                     .role(Role.ROLE_USERS)
                     .email(email)
+                    .mobile(mobile)
                     .build();
             usersRepository.save(user);
         }
