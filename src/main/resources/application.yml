@@ -10,7 +10,7 @@ spring:
     username: root
     password: admin1234
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.0.7:3306/dev
+    url: jdbc:mysql://172.29.107.12:3306/dev
 
 
   security:
