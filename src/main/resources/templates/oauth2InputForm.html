@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Input Form</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* 입력 필드의 너비를 줄이는 스타일 */
+        .form-control {
+            width: 300px; /* 원하는 너비로 조정 */
+        }
+
+        .container {
+            height: 100vh; /* 전체 화면 높이 */
+            display: flex;
+            flex-direction: column; /* 세로 방향 정렬 */
+            justify-content: flex-start; /* 위쪽 정렬 */
+            align-items: center; /* 수평 중앙 정렬 */
+            padding-top: 50px; /* 상단 여백 */
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="text-center">사용자 정보 입력</h2>
+    <form action="#" th:action="@{/oauth2InputForm}" method="post" class="d-flex flex-column align-items-center">
+        <div class="form-group">
+            <label for="name">이름:</label>
+            <input type="text" id="name" name="name" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="role">권한:</label>
+            <input type="text" id="role" name="role" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">입력</button>
+    </form>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

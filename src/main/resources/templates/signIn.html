@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign In</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <!-- Card for sign-in form -->
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4>Sign In</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Sign In Form -->
+                    <form th:action="@{/login}" method="post">
+                        <!-- ID Input -->
+                        <div class="form-group">
+                            <label for="id">ID</label>
+                            <input type="text" class="form-control" id="id" name="username" placeholder="Enter your ID" required>
+                        </div>
+                        <!-- Password Input -->
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                        </div>
+                        <!-- Sign In and Sign Up Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                            <a href="/signup" class="btn btn-secondary">Sign Up</a>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <!-- Naver OAuth2 Sign In -->
+                    <p>Or sign in with</p>
+
+                    <!-- /oauth2/authorization/ URI는 Spring Security에서 예약어로 사용되며, 직접 사용자가 호출하거나 수정해서는 안 되는 URI이다. -->
+                    <a href="/oauth2/authorization/naver">
+                        <img src="https://static.nid.naver.com/oauth/small_g_in.PNG" alt="Sign in with Naver" style="width: 120px;">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
