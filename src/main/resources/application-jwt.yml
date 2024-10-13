@@ -1,5 +1,0 @@
-jwt:
-  secret: vE87#Dg!49sF23$dJ3rG#1s1!H1h@F#4F
-  expiration: 1800                 # 만료 시간 (초 단위, 30분 = 1800초)
-  refreshExpiration: 604800        # Refresh token 만료 시간 (초 단위, 7일 = 604800초)
-  issuer: factory_company        # 토큰 발급자 (옵션)
