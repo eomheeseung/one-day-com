@@ -17,14 +17,14 @@ public class UserService {
 
     public void Oauth2SaveUser(Oauth2UserInputDTO oauth2UserInputDTO, HttpServletRequest request) {
         String name = oauth2UserInputDTO.getName();
-        String role = oauth2UserInputDTO.getRole();
+        String workArea = oauth2UserInputDTO.getRole();
 
         String email = request.getSession().getAttribute("email").toString();
         String contact = request.getSession().getAttribute("contact").toString();
 
         try {
             Member member =
-                    Member.builder().name(name).accessRole(role).loginId(email).contact(contact).socialType(SocialType.NAVER).build();
+                    Member.builder().name(name).workArea(workArea).loginId(email).contact(contact).socialType(SocialType.NAVER).build();
 
             memberRepository.save(member);
         } catch (RuntimeException e) {

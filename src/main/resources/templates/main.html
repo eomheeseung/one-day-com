@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메인 페이지</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Optional custom CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .welcome-container {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .welcome-message {
+            font-size: 2rem;
+            color: #343a40;
+        }
+
+        .btn-custom {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">MyApp</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Profile</a>
+            </li>
+            <li>
+                <form action="/logout" method="POST">
+                    <button type="submit" class="btn btn-link nav-link">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Welcome Message -->
+<div class="container welcome-container">
+    <div class="welcome-message">
+        <h3 th:text="'환영합니다, ' + ${name} + ' 님!'"></h3>
+        <h3 th:text="'작업구역은' + ${workArea} + ' 입니다.'"></h3>
+    </div>
+    <button class="btn btn-primary btn-lg btn-custom" onclick="alert('환영합니다!')">확인</button>
+</div>
+
+<!-- Bootstrap JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Custom Script -->
+<script>
+    fetch('/main', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token // JWT를 Authorization 헤더에 추가
+        }
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.text(); // HTML 텍스트 반환
+            } else {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+        })
+        .then(data => {
+            document.getElementById('content').innerHTML = data; // 메인 페이지 콘텐츠로 업데이트
+        })
+        .catch(error => console.error('Error:', error));
+</script>
+
+</body>
+</html>

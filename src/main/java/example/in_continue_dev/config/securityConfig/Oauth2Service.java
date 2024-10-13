@@ -1,24 +1,13 @@
 package example.in_continue_dev.config.securityConfig;
 
-import com.nimbusds.openid.connect.sdk.UserInfoErrorResponse;
-import example.in_continue_dev.domain.Role;
-import example.in_continue_dev.domain.Users;
-import example.in_continue_dev.domain.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
-import java.util.Optional;
 
 
 @Service
@@ -41,7 +30,7 @@ public class Oauth2Service extends DefaultOAuth2UserService {
         OAuth2AccessToken accessToken = userRequest.getAccessToken();
 
         // token logging
-        log.info("accessToken:{}", accessToken.getTokenValue());
+        log.info("oauth2 naver accessToken:{}", accessToken.getTokenValue());
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
 

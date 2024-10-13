@@ -38,7 +38,6 @@ public class CustomOauth2User implements OAuth2User {
         return oAuth2User.getAttributes(); // 여기에 실제 속성을 반환하도록 수정
     }
 
-
     public String getContact() {
         return getUserAttribute("mobile");
     }

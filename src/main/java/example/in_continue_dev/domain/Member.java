@@ -1,7 +1,6 @@
 package example.in_continue_dev.domain;
 
 import example.in_continue_dev.domain.socialType.SocialType;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,8 +23,8 @@ public class Member {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "access_role")
-    private String accessRole;
+    @Column(name = "work_area")
+    private String workArea;
 
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
@@ -33,9 +32,9 @@ public class Member {
     private String contact;
 
     @Builder
-    public Member(String name, String accessRole, String loginId, SocialType socialType, String contact) {
+    public Member(String name, String workArea, String loginId, SocialType socialType, String contact) {
         this.name = name;
-        this.accessRole = accessRole;
+        this.workArea = workArea;
         this.loginId = loginId;
         this.socialType = socialType;
         this.contact = contact;
