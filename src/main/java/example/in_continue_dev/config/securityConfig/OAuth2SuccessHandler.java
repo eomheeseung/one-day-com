@@ -63,7 +63,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             log.info("Session contact: {}", request.getSession().getAttribute("contact"));
 
             // 리디렉션 - get이 호출
-            response.sendRedirect("/oauth2InputForm");
+            response.sendRedirect("http://localhost:3000/Oauth2InputForm");
 
         } else {
             Member member = optionalMember.get();
@@ -83,7 +83,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             response.addHeader("Authorization", "Bearer " + generateAccessToken);
 
             // 메인 페이지로 리다이렉션
-            response.sendRedirect("/main");
+            response.sendRedirect("http://localhost:3000/main");
         }
     }
 }
