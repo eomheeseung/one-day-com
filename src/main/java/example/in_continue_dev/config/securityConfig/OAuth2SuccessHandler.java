@@ -39,11 +39,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 token.getAuthorizedClientRegistrationId(), token.getName());
 
         // AccessToken 가져오기
-        OAuth2AccessToken accessToken = authorizedClient.getAccessToken();
+        OAuth2AccessToken oauth2AccessToken = authorizedClient.getAccessToken();
 
         // OAuth2UserRequest 생성
         OAuth2UserRequest userRequest = new OAuth2UserRequest(
-                authorizedClient.getClientRegistration(), accessToken);
+                authorizedClient.getClientRegistration(), oauth2AccessToken);
 
         // loadUser 호출
         OAuth2User oAuth2User = oauth2Service.loadUser(userRequest);
@@ -54,33 +54,33 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Optional<Member> optionalMember = memberRepository.findByLoginId(email);
 
         if (optionalMember.isEmpty()) {
-            // null 발생하지 않음.
+            // 회원가입이 필요한 경우 세션에 이메일과 연락처 저장
             request.getSession().setAttribute("email", email);
             request.getSession().setAttribute("contact", contact);
 
             // 세션에 저장된 정보를 로그로 확인
-            log.info("Session email: {}", request.getSession().getAttribute("email").toString());
-            log.info("Session contact: {}", request.getSession().getAttribute("contact").toString());
+            log.info("Session email: {}", request.getSession().getAttribute("email"));
+            log.info("Session contact: {}", request.getSession().getAttribute("contact"));
 
             // 리디렉션 - get이 호출
             response.sendRedirect("/oauth2InputForm");
 
-
         } else {
             Member member = optionalMember.get();
 
+            // JWT 생성
             String generateAccessToken = jwtProvider.generateAccessToken(member.getLoginId());
             String generateRefreshToken = jwtProvider.generateRefreshToken();
 
-            log.info("generate access jwt: {}", generateAccessToken);
-            log.info("generate refresh jwt: {}", generateRefreshToken);
+            log.info("Generated access JWT: {}", generateAccessToken);
+            log.info("Generated refresh JWT: {}", generateRefreshToken);
 
             request.getSession().setAttribute("member", member);
 
-            log.info("인증 후 member:{}", member.getName());
+            log.info("Authenticated member: {}", member.getName());
 
+            // Access Token을 응답 헤더에 추가
             response.addHeader("Authorization", "Bearer " + generateAccessToken);
-
 
             // 메인 페이지로 리다이렉션
             response.sendRedirect("/main");

@@ -11,12 +11,18 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private static final String[] NOCHECK = new String[]{"/login/**", "/oauth2/**", "/signIn"};
+    private static final String[] NOCHECK = new String[]{"/login/**", "/oauth2/**", "/signIn", "/signUp"};
     private final Oauth2Service oauth2Service;
     private final OAuth2AuthorizedClientService authorizedClientService;
     private final MemberRepository memberRepository;
@@ -26,10 +32,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .authorizeHttpRequests(configurator ->
                         configurator.requestMatchers(NOCHECK).permitAll()
                                 .anyRequest().authenticated())
-                .oauth2Login(customizer -> customizer.successHandler(loginSuccessFilter()))
+                .oauth2Login(customizer -> customizer.successHandler(loginSuccessFilter())
+//                        .authorizationEndpoint(authorizationEndpointCustomizer ->
+//                                authorizationEndpointCustomizer.baseUri("/oauth2/authorization/**"))
+                )
+
                 .formLogin(configurator -> configurator
                         .loginPage("/signIn")
                         .permitAll()
@@ -52,6 +63,20 @@ public class SecurityConfig {
     @Bean
     public AuthenticationSuccessHandler loginSuccessFilter() {
         return new OAuth2SuccessHandler(oauth2Service, authorizedClientService, memberRepository, jwtProvider);
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // React 앱의 도메인 설정
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // 모든 요청에 대해 CORS 설정 적용
+
+        return source;
     }
 }
 

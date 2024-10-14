@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,22 +8,18 @@
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Optional custom CSS -->
     <style>
         body {
             background-color: #f8f9fa;
         }
-
         .welcome-container {
             margin-top: 50px;
             text-align: center;
         }
-
         .welcome-message {
             font-size: 2rem;
             color: #343a40;
         }
-
         .btn-custom {
             margin-top: 20px;
         }
@@ -56,12 +52,8 @@
 </nav>
 
 <!-- Welcome Message -->
-<div class="container welcome-container">
-    <div class="welcome-message">
-        <h3 th:text="'환영합니다, ' + ${name} + ' 님!'"></h3>
-        <h3 th:text="'작업구역은' + ${workArea} + ' 입니다.'"></h3>
-    </div>
-    <button class="btn btn-primary btn-lg btn-custom" onclick="alert('환영합니다!')">확인</button>
+<div class="container welcome-container" id="content">
+    <!-- JavaScript로 동적으로 메시지를 추가할 것입니다 -->
 </div>
 
 <!-- Bootstrap JS, Popper.js, and jQuery -->
@@ -69,25 +61,40 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<!-- Custom Script -->
 <script>
-    fetch('/main', {
-        method: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + token // JWT를 Authorization 헤더에 추가
-        }
-    })
-        .then(response => {
-            if (response.ok) {
-                return response.text(); // HTML 텍스트 반환
-            } else {
-                throw new Error('Network response was not ok: ' + response.statusText);
+    // Authorization 헤더에서 JWT 토큰을 가져옴
+    const token = localStorage.getItem('accessToken'); // 또는 sessionStorage 사용
+
+    if (token) {
+        // 세션 저장소에서 사용자 정보를 가져와서 메시지 표시
+        // Fetch 요청 예시
+        fetch('/main', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token // 여기에 토큰을 추가
             }
         })
-        .then(data => {
-            document.getElementById('content').innerHTML = data; // 메인 페이지 콘텐츠로 업데이트
-        })
-        .catch(error => console.error('Error:', error));
+                .then(response => response.json())
+            .then(data => {
+                // 사용자 정보를 사용하여 환영 메시지 생성
+                const contentDiv = document.getElementById('content');
+                contentDiv.innerHTML = `
+                <div class="welcome-message">
+                    <h3>환영합니다, ${data.name} 님!</h3>
+                    <h3>작업구역은 ${data.workArea} 입니다.</h3>
+                </div>
+                <button class="btn btn-primary btn-lg btn-custom" onclick="alert('환영합니다!')">확인</button>
+            `;
+            })
+            .catch(error => {
+                console.error('Error fetching user info:', error);
+                alert('사용자 정보를 가져오는 데 오류가 발생했습니다.');
+            });
+    } else {
+        console.error('No token found');
+        alert('인증 토큰이 없습니다. 다시 로그인해주세요.');
+        window.location.href = '/signIn';
+    }
 </script>
 
 </body>

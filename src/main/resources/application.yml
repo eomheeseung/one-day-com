@@ -15,9 +15,14 @@ spring:
     # github actions를 사용할 때는 en0와 같이 외부 ip로 접속을 하는 것이 아니고
     # github actions 내부에서 mysql을 pull하고, connect를 하기 때문에 db명을 적어주어야 한다.
     # 외부ip에서 docker로 접속하는 것이 아닌 내부끼리 접속을 함
-    # 192.168.0.7
+    # ifconfig en0 : 192.168.0.7
     url: jdbc:mysql://192.168.219.48:3306/dev
 
 # 또 다른 yml을 사용하려면 이런식으로 작성해야 한다.
+# 활성화 하려는 profiles의 이름을 지정해 주면된다.
+# 관용적으로 또다른 profile는 application-[XXX].yml이라고 이름이 붙는다.
+# 여기서 [XXXX]의 부분을 적어주면된다.
+# 해당 방식은 application.yml을 먼저 active하고 profiles의 active를 보고 아래의 profiles들을 active하게 된다.
+
   profiles:
     active: oauth2, jwt
