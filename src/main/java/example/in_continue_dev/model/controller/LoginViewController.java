@@ -2,6 +2,7 @@ package example.in_continue_dev.model.controller;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import example.in_continue_dev.domain.Member;
+import example.in_continue_dev.domain.repository.MemberRepository;
 import example.in_continue_dev.jwt.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 public class LoginViewController {
     private final JwtProvider jwtProvider;
+    private final MemberRepository memberRepository;
 
     // signIn.html 페이지를 보여주는 메서드
     @GetMapping("/signIn")
@@ -43,6 +47,12 @@ public class LoginViewController {
         return ResponseEntity.ok("signUp page loaded.");
     }
 
+    @GetMapping("/login")
+    public ResponseEntity<String> loginPage() {
+        log.info("login page loaded.");
+        return ResponseEntity.ok("login page loaded.");
+    }
+
 
     /**
      * TODO 토큰유효성 검증
@@ -54,7 +64,10 @@ public class LoginViewController {
      *  3-2. token을 발급하고 header에 넣고, main으로 리다이렉트
      *  3-3. but 아래의 controller이 호출되지 않고, front도 signIn page만 보여짐 (토큰의 인증이 안된 것)
      *  * oauth2를 할 때 id, pw를 입력받게 -> logout를 구성하면 될 것 같음
-     *  * token 문제
+     *
+     *  10.15
+     *  해당 메소드는 실행이 되는데
+     *  렌더링이 되는 url쪽을 봐야할 것 같음 frontend 문제
      * @param request
      * @return
      */
@@ -74,13 +87,14 @@ public class LoginViewController {
 
                 log.info("jwt getSubject email: {}", email);
 
-                Member member = (Member) request.getSession().getAttribute("member");
+                Optional<Member> optionalMember = memberRepository.findByLoginId(email);
 
                 // 회원 정보가 있는 경우 JSON 형태로 반환
-                if (member != null) {
+                if (optionalMember.isPresent()) {
+                    Member member = optionalMember.get();
                     return ResponseEntity.ok(new MemberResponse(member.getName(), member.getWorkArea()));
                 } else {
-                    return ResponseEntity.badRequest().body("Member not found in session");
+                    return ResponseEntity.badRequest().body("Member not found");
                 }
 
             } catch (Exception e) {
@@ -92,6 +106,7 @@ public class LoginViewController {
             return ResponseEntity.badRequest().body("No token provided");
         }
     }
+
 
     // 내부 클래스를 통해 회원 정보를 반환하는 DTO 정의
     private static class MemberResponse {

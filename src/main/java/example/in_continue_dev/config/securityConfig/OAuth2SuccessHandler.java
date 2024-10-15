@@ -3,6 +3,7 @@ package example.in_continue_dev.config.securityConfig;
 import example.in_continue_dev.domain.Member;
 import example.in_continue_dev.domain.repository.MemberRepository;
 import example.in_continue_dev.jwt.JwtProvider;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException {
 
-        // Authentication에서 OAuth2AuthenticationToken 가져오기
+        // OAuth2 인증 성공 시 OAuth2AuthenticationToken 가져오기
         OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) authentication;
 
         // AuthorizedClient 가져오기
@@ -45,7 +46,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         OAuth2UserRequest userRequest = new OAuth2UserRequest(
                 authorizedClient.getClientRegistration(), oauth2AccessToken);
 
-        // loadUser 호출
+        // loadUser 호출하여 사용자 정보 로드
         OAuth2User oAuth2User = oauth2Service.loadUser(userRequest);
 
         String email = ((CustomOauth2User) oAuth2User).getEmail();
@@ -54,7 +55,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Optional<Member> optionalMember = memberRepository.findByLoginId(email);
 
         if (optionalMember.isEmpty()) {
-            // 회원가입이 필요한 경우 세션에 이메일과 연락처 저장
             request.getSession().setAttribute("email", email);
             request.getSession().setAttribute("contact", contact);
 
@@ -64,7 +64,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
             // 리디렉션 - get이 호출
             response.sendRedirect("http://localhost:3000/Oauth2InputForm");
-
         } else {
             Member member = optionalMember.get();
 
@@ -75,15 +74,24 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             log.info("Generated access JWT: {}", generateAccessToken);
             log.info("Generated refresh JWT: {}", generateRefreshToken);
 
-            request.getSession().setAttribute("member", member);
+            // 기존 헤더에 토큰을 추가하는 방식 -> 쿠키에 토큰을 저장하는 방식으로 수정
+            // Access Token과 Refresh Token을 쿠키에 추가
+            Cookie accessTokenCookie = new Cookie("accessToken", generateAccessToken);
+//            accessTokenCookie.setHttpOnly(true); // XSS 공격 방지
+            accessTokenCookie.setPath("/"); // 모든 경로에서 쿠키 사용
+            accessTokenCookie.setMaxAge(60 * 60 * 24); // 쿠키 유효 기간 설정 (하루)
 
-            log.info("Authenticated member: {}", member.getName());
+            Cookie refreshTokenCookie = new Cookie("refreshToken", generateRefreshToken);
+//            refreshTokenCookie.setHttpOnly(true);
+            refreshTokenCookie.setPath("/");
+            refreshTokenCookie.setMaxAge(60 * 60 * 24 * 7); // 7일 유효
 
-            // Access Token을 응답 헤더에 추가
-            response.addHeader("Authorization", "Bearer " + generateAccessToken);
+            // 응답에 쿠키 추가
+            response.addCookie(accessTokenCookie);
+            response.addCookie(refreshTokenCookie);
 
-            // 메인 페이지로 리다이렉션
-            response.sendRedirect("http://localhost:3000/main");
+            // 클라이언트는 이 쿠키를 통해 토큰을 사용하게 됨
+            response.sendRedirect("http://localhost:3000/tokenHandler");
         }
     }
 }
