@@ -1,9 +1,9 @@
 package example.in_continue_dev.config.securityConfig;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import example.in_continue_dev.domain.Member;
 import example.in_continue_dev.domain.repository.MemberRepository;
 import example.in_continue_dev.jwt.JwtProvider;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +18,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -74,23 +76,19 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             log.info("Generated access JWT: {}", generateAccessToken);
             log.info("Generated refresh JWT: {}", generateRefreshToken);
 
-            // 기존 헤더에 토큰을 추가하는 방식 -> 쿠키에 토큰을 저장하는 방식으로 수정
-            // Access Token과 Refresh Token을 쿠키에 추가
-            Cookie accessTokenCookie = new Cookie("accessToken", generateAccessToken);
-//            accessTokenCookie.setHttpOnly(true); // XSS 공격 방지
-            accessTokenCookie.setPath("/"); // 모든 경로에서 쿠키 사용
-            accessTokenCookie.setMaxAge(60 * 60 * 24); // 쿠키 유효 기간 설정 (하루)
+            // JWT를 JSON 형태로 클라이언트에 응답
+            Map<String, String> tokens = new HashMap<>();
+            tokens.put("accessToken", generateAccessToken);
+            tokens.put("refreshToken", generateRefreshToken);
 
-            Cookie refreshTokenCookie = new Cookie("refreshToken", generateRefreshToken);
-//            refreshTokenCookie.setHttpOnly(true);
-            refreshTokenCookie.setPath("/");
-            refreshTokenCookie.setMaxAge(60 * 60 * 24 * 7); // 7일 유효
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(new ObjectMapper().writeValueAsString(tokens));
 
-            // 응답에 쿠키 추가
-            response.addCookie(accessTokenCookie);
-            response.addCookie(refreshTokenCookie);
+            // CORS 설정 (필요한 경우)
+            response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+            response.setHeader("Access-Control-Allow-Credentials", "true"); // 쿠키 전송 허용
 
-            // 클라이언트는 이 쿠키를 통해 토큰을 사용하게 됨
             response.sendRedirect("http://localhost:3000/tokenHandler");
         }
     }
