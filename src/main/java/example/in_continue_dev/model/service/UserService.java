@@ -24,7 +24,7 @@ public class UserService {
 
         try {
             Member member =
-                    Member.builder().name(name).workArea(workArea).loginId(email).contact(contact).socialType(SocialType.NAVER).build();
+                    Member.builder().name(name).workArea(workArea).email(email).contact(contact).socialType(SocialType.NAVER).build();
 
             memberRepository.save(member);
         } catch (RuntimeException e) {

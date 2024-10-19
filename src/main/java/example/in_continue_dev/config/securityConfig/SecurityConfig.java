@@ -1,16 +1,19 @@
 package example.in_continue_dev.config.securityConfig;
 
 import example.in_continue_dev.domain.repository.MemberRepository;
-import example.in_continue_dev.jwt.JwtProvider;
+import example.in_continue_dev.jwt.JwtService;
+import example.in_continue_dev.jwt.JwtValidHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -22,11 +25,14 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private static final String[] NOCHECK = new String[]{"/login/**", "/oauth2/**", "/signIn", "/signUp"};
+    private static final String[] NOCHECK = new String[]{"/login/**",
+            "/oauth2/**", "/signIn", "/signUp",
+            "/api/Oauth2InputForm"};
     private final Oauth2Service oauth2Service;
     private final OAuth2AuthorizedClientService authorizedClientService;
     private final MemberRepository memberRepository;
-    private final JwtProvider jwtProvider;
+    private final JwtService jwtService;
+    private final JwtValidHandler jwtValidHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -34,7 +40,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 // session policy
-//                .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(configurator ->
                         configurator.requestMatchers(NOCHECK).permitAll()
                                 .anyRequest().authenticated())
@@ -59,12 +65,14 @@ public class SecurityConfig {
                         .logoutUrl("/logout")
                         // logout을 수행한 후 실행할 url
                         .logoutSuccessUrl("/signIn"))
+                .addFilterBefore(jwtValidHandler, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
+
     @Bean
     public AuthenticationSuccessHandler loginSuccessFilter() {
-        return new OAuth2SuccessHandler(oauth2Service, authorizedClientService, memberRepository, jwtProvider);
+        return new OAuth2SuccessHandler(oauth2Service, authorizedClientService, memberRepository, jwtService);
     }
 
     @Bean

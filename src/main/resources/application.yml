@@ -16,7 +16,7 @@ spring:
     # github actions 내부에서 mysql을 pull하고, connect를 하기 때문에 db명을 적어주어야 한다.
     # 외부ip에서 docker로 접속하는 것이 아닌 내부끼리 접속을 함
     # ifconfig en0 : 192.168.0.7
-    url: jdbc:mysql://192.168.0.7:3306/dev
+    url: jdbc:mysql://172.30.1.42:3306/dev
 
 # 또 다른 yml을 사용하려면 이런식으로 작성해야 한다.
 # 활성화 하려는 profiles의 이름을 지정해 주면된다.

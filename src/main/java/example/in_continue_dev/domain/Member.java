@@ -5,17 +5,19 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
 @NoArgsConstructor
+@Setter
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = true)
-    private String loginId;
+    private String email;
 
     @Column(nullable = true)
     private String password;
@@ -32,10 +34,10 @@ public class Member {
     private String contact;
 
     @Builder
-    public Member(String name, String workArea, String loginId, SocialType socialType, String contact) {
+    public Member(String name, String workArea, String email, SocialType socialType, String contact) {
         this.name = name;
         this.workArea = workArea;
-        this.loginId = loginId;
+        this.email = email;
         this.socialType = socialType;
         this.contact = contact;
     }
