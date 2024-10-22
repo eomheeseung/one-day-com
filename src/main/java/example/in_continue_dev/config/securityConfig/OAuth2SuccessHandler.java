@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -28,7 +30,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final OAuth2AuthorizedClientService authorizedClientService;
     private final MemberRepository memberRepository;
     private final JwtService jwtService;
-
+    private final PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -46,12 +48,16 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         OAuth2User oAuth2User = oauth2Service.loadUser(userRequest);
         String email = ((CustomOauth2User) oAuth2User).getEmail();
         String contact = ((CustomOauth2User) oAuth2User).getContact();
+        String name = ((CustomOauth2User) oAuth2User).getUserName();
 
         Optional<Member> optionalMember = memberRepository.findByEmail(email);
 
         if (optionalMember.isEmpty()) {
             Member member = new Member();
             member.setEmail(email);
+            member.setName(name);
+            member.setWorkArea("a");
+            member.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
             member.setContact(contact);
 
             memberRepository.save(member);
@@ -66,8 +72,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         tokens.put("refreshToken", refreshToken);
 
 
-
-        // 토큰을 클라이언트에게 전달하는 대신, redirect URL을 반환
         response.sendRedirect("http://localhost:3000/?accessToken=" + accessToken + "&refreshToken=" + refreshToken);
     }
 }

@@ -1,13 +1,12 @@
 package example.in_continue_dev.config.securityConfig;
 
-import example.in_continue_dev.domain.socialType.SocialType;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.lang.annotation.Repeatable;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class CustomOauth2User implements OAuth2User {
@@ -44,6 +43,10 @@ public class CustomOauth2User implements OAuth2User {
 
     public String getEmail() {
         return getUserAttribute("email");
+    }
+
+    public String getUserName() {
+        return getUserAttribute("name");
     }
 
     private String getUserAttribute(String attributeName) {

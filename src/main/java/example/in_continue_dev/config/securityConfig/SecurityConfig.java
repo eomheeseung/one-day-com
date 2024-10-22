@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -72,7 +74,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationSuccessHandler loginSuccessFilter() {
-        return new OAuth2SuccessHandler(oauth2Service, authorizedClientService, memberRepository, jwtService);
+        return new OAuth2SuccessHandler(oauth2Service, authorizedClientService, memberRepository, jwtService, passwordEncoder());
     }
 
     @Bean
@@ -87,6 +89,11 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration); // 모든 요청에 대해 CORS 설정 적용
 
         return source;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
 

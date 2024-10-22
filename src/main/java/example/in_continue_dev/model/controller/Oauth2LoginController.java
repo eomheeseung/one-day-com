@@ -1,7 +1,7 @@
 package example.in_continue_dev.model.controller;
 
-import example.in_continue_dev.domain.Member;
-import example.in_continue_dev.domain.repository.MemberRepository;
+import example.in_continue_dev.domain.dto.MemberResponseDto;
+import example.in_continue_dev.domain.member.MemberService;
 import example.in_continue_dev.jwt.JwtService;
 import example.in_continue_dev.model.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ import java.io.IOException;
 public class Oauth2LoginController {
     private final UserService userService;
     private final JwtService jwtService;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     /**
      * front에서 url로 호출하면 oauth2 로직 실행
@@ -35,7 +35,7 @@ public class Oauth2LoginController {
 
 
     @GetMapping("/api/userInfo")
-    public ResponseEntity<Member> getUserInfo(HttpServletRequest request) {
+    public ResponseEntity<MemberResponseDto> getUserInfo(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -46,9 +46,10 @@ public class Oauth2LoginController {
 
         // JWT에서 이메일 추출
         String email = jwtService.getUsernameFromToken(token); // 유효성 검사를 필터에서 했으므로 이 부분에서 안전함
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-        return ResponseEntity.ok(member); // 사용자 정보 반환
+        MemberResponseDto memberResponseDto = memberService.findMemberByEmail(email);
+
+
+        return ResponseEntity.ok(memberResponseDto); // 사용자 정보 반환
     }
 }
