@@ -1,6 +1,6 @@
 package example.in_continue_dev.config.securityConfig;
 
-import example.in_continue_dev.domain.repository.MemberRepository;
+import example.in_continue_dev.domain.member.repository.MemberRepository;
 import example.in_continue_dev.jwt.JwtService;
 import example.in_continue_dev.jwt.JwtValidHandler;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +39,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
+                .cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 // session policy

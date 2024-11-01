@@ -1,4 +1,4 @@
-package example.in_continue_dev.domain;
+package example.in_continue_dev.domain.member;
 
 import example.in_continue_dev.domain.socialType.SocialType;
 import jakarta.persistence.*;

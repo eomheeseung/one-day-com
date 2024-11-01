@@ -1,7 +1,7 @@
 package example.in_continue_dev.config.securityConfig;
 
-import example.in_continue_dev.domain.Member;
-import example.in_continue_dev.domain.repository.MemberRepository;
+import example.in_continue_dev.domain.member.Member;
+import example.in_continue_dev.domain.member.repository.MemberRepository;
 import example.in_continue_dev.jwt.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

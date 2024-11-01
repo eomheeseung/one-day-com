@@ -43,10 +43,6 @@ dependencies {
 
 	// Auth0 Java JWT 라이브러리 사용
 	implementation 'com.auth0:java-jwt:4.4.0'
-
-	// yml 참조를 위해서
-//	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-
 }
 
 tasks.named('test') {

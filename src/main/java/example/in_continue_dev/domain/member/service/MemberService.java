@@ -1,8 +1,8 @@
-package example.in_continue_dev.domain.member;
+package example.in_continue_dev.domain.member.service;
 
-import example.in_continue_dev.domain.Member;
+import example.in_continue_dev.domain.member.Member;
 import example.in_continue_dev.domain.dto.MemberResponseDto;
-import example.in_continue_dev.domain.repository.MemberRepository;
+import example.in_continue_dev.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

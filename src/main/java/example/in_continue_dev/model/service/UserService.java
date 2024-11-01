@@ -1,8 +1,8 @@
 package example.in_continue_dev.model.service;
 
-import example.in_continue_dev.domain.Member;
+import example.in_continue_dev.domain.member.Member;
 import example.in_continue_dev.domain.User.dto.Oauth2UserInputDTO;
-import example.in_continue_dev.domain.repository.MemberRepository;
+import example.in_continue_dev.domain.member.repository.MemberRepository;
 import example.in_continue_dev.domain.socialType.SocialType;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

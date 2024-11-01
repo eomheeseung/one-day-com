@@ -1,6 +1,6 @@
 package example.in_continue_dev.jwt;
 
-import example.in_continue_dev.domain.repository.MemberRepository;
+import example.in_continue_dev.domain.member.repository.MemberRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,7 +44,5 @@ public class JwtValidHandler extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
-
-
     }
 }

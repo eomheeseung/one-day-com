@@ -1,6 +1,6 @@
-package example.in_continue_dev.domain.repository;
+package example.in_continue_dev.domain.member.repository;
 
-import example.in_continue_dev.domain.Member;
+import example.in_continue_dev.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
