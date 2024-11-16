@@ -1,5 +1,9 @@
 package example.in_continue_dev.jwt;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import example.in_continue_dev.domain.member.repository.MemberRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -34,13 +38,23 @@ public class JwtValidHandler extends OncePerRequestFilter {
         if (authorization != null && authorization.startsWith("Bearer ")) {
             String token = authorization.substring(7);
 
-            if (jwtService.validateAccessToken(token)) {
-                String username = jwtService.getUsernameFromToken(token); // 토큰에서 사용자 이름 가져오기
-                UserDetails userDetails = new User(username, "", new ArrayList<>()); // 필요한 경우 권한 추가
+            try {
+                // 토큰 검증
+                DecodedJWT decodedJWT =
+                        JWT.require(Algorithm.HMAC256(jwtProperties.getSecret().getBytes())).build().verify(token);
 
+                // 토큰이 유효하면, Authentication 객체를 SecurityContext에 설정
+                String username = decodedJWT.getSubject();
+                UserDetails userDetails = new User(username, "", new ArrayList<>());
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            } catch (JWTVerificationException ex) {
+                // 토큰이 만료되었거나 유효하지 않은 경우 401 Unauthorized 응답을 보냄
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT token is expired or invalid");
+                return;
             }
         }
         filterChain.doFilter(request, response);

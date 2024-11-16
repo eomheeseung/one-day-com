@@ -33,7 +33,7 @@ public class MemberController {
 
         if (token.isPresent()) {
             // JWT에서 이메일 추출
-            String email = jwtService.getUsernameFromToken(token.get()); // 유효성 검사를 필터에서 했으므로 이 부분에서 안전함
+            String email = jwtService.getSubjectFromToken(token.get()); // 유효성 검사를 필터에서 했으므로 이 부분에서 안전함
 
             MemberResponseDto memberResponseDto = memberService.findMemberByEmail(email);
 
