@@ -1,5 +1,7 @@
 package example.in_continue_dev.config.securityConfig;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -11,6 +13,8 @@ import java.util.Map;
 @Slf4j
 public class CustomOauth2User implements OAuth2User {
     private final OAuth2User oAuth2User;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
 
     public CustomOauth2User(OAuth2User oAuth2User) {
         this.oAuth2User = oAuth2User;
@@ -26,10 +30,9 @@ public class CustomOauth2User implements OAuth2User {
     @Override
     public String getName() {
         // 네이버의 사용자 정보에서 'id' 값을 사용자 식별자로 사용
-        Map<String, Object> attributes = oAuth2User.getAttributes();
-        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+        Map<String, Object> response = getResponse();
 
-        return (String) response.get("id");  // 'id'는 네이버에서 제공하는 고유 식별자
+        return response.get("id").toString();  // 'id'는 네이버에서 제공하는 고유 식별자
     }
 
     @Override
@@ -49,9 +52,16 @@ public class CustomOauth2User implements OAuth2User {
         return getUserAttribute("name");
     }
 
-    private String getUserAttribute(String attributeName) {
+    private Map<String, Object> getResponse() {
         Map<String, Object> attributes = oAuth2User.getAttributes();
-        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+        Object object = attributes.get("response");
+
+        return objectMapper.convertValue(object, new TypeReference<>() {
+        });
+    }
+
+    private String getUserAttribute(String attributeName) {
+        Map<String, Object> response = getResponse();
         return (String) response.get(attributeName);
     }
 

@@ -22,16 +22,17 @@ public class JwtService {
     private final JwtProperties jwtProperties;
 
     // Algorithm을 선언하지만 초기화는 생성자에서
-    private final Algorithm algorithm;
+    private final Algorithm secretKey;
     private final UserService userService;
 
     public JwtService(JwtProperties jwtProperties, UserService userService) {
         this.jwtProperties = jwtProperties;
         // 로그 추가
         log.info("JwtProperties issuer (yml 확인용.): {}", jwtProperties.getIssuer());
-        this.algorithm = Algorithm.HMAC256(jwtProperties.getSecret()); // JwtProperties에서 비밀 키 가져오기
+        this.secretKey = Algorithm.HMAC256(jwtProperties.getSecret()); // JwtProperties에서 비밀 키 가져오기
         this.userService = userService;
     }
+
 
     // JWT 생성 (Access Token)
     public String generateAccessToken(String email) {
@@ -39,7 +40,7 @@ public class JwtService {
                 .withSubject(email) // 클레임 설정
                 .withIssuedAt(new Date()) // 발급 시간
                 .withExpiresAt(new Date(System.currentTimeMillis() + jwtProperties.getExpiration())) // 만료 시간
-                .sign(algorithm); // 서명
+                .sign(secretKey); // 서명
     }
 
     // JWT 생성 (Refresh Token)
@@ -48,7 +49,7 @@ public class JwtService {
                 .withSubject(UUID.randomUUID().toString()) // 유니크한 식별자 (UUID) 사용
                 .withIssuedAt(new Date()) // 발급 시간
                 .withExpiresAt(new Date(System.currentTimeMillis() + jwtProperties.getRefreshExpiration())) // 만료 시간
-                .sign(algorithm); // 서명
+                .sign(secretKey); // 서명
     }
 
     // jwt 검증
@@ -56,7 +57,7 @@ public class JwtService {
         // 만료시간도 검증이 된다.
         try {
             JWTVerifier verifier =
-                    JWT.require(algorithm).build();
+                    JWT.require(secretKey).build();
             verifier.verify(token);
             return true; // 검증 성공 시 true 반환
         } catch (JWTVerificationException e) {
@@ -74,7 +75,7 @@ public class JwtService {
     public Map<String, String> refreshTokens(String refreshToken) {
         try {
             // Refresh Token 검증
-            DecodedJWT decodedJWT = JWT.require(algorithm)
+            DecodedJWT decodedJWT = JWT.require(secretKey)
                     .build()
                     .verify(refreshToken);
 

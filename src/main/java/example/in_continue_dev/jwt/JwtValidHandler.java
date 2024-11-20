@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import example.in_continue_dev.domain.member.repository.MemberRepository;
+import example.in_continue_dev.ex.customException.NotFoundTokenException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class JwtValidHandler extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final JwtProperties jwtProperties;
     private final MemberRepository memberRepository;
+    private final TokenParser tokenParser;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -33,12 +36,12 @@ public class JwtValidHandler extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        String authorization = request.getHeader("Authorization");
+        Optional<String> optionalParseToken = tokenParser.tokenParse(request);
 
-        if (authorization != null && authorization.startsWith("Bearer ")) {
-            String token = authorization.substring(7);
-
+        if (optionalParseToken.isPresent()) {
             try {
+                String token = optionalParseToken.get();
+
                 // 토큰 검증
                 DecodedJWT decodedJWT =
                         JWT.require(Algorithm.HMAC256(jwtProperties.getSecret().getBytes())).build().verify(token);
@@ -56,7 +59,10 @@ public class JwtValidHandler extends OncePerRequestFilter {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT token is expired or invalid");
                 return;
             }
+        } else {
+            throw new NotFoundTokenException("토큰이 존재하지 않습니다.");
         }
+
         filterChain.doFilter(request, response);
     }
 }
