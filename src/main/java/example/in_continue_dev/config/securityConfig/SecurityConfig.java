@@ -78,6 +78,7 @@ public class SecurityConfig {
         return new OAuth2SuccessHandler(oauth2Service, authorizedClientService, memberRepository, jwtService, passwordEncoder());
     }
 
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
