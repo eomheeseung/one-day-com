@@ -24,4 +24,11 @@ public class Oauth2LoginController {
     public void oauth2Transfer(HttpServletResponse response) throws IOException {
         response.sendRedirect("http://localhost:8080/oauth2/authorization/naver");
     }
+
+    @GetMapping("/login")
+    public void login(HttpServletResponse response) throws IOException {
+        response.sendRedirect("http://localhost:8080/oauth2/authorization/naver");
+    }
+
+
 }

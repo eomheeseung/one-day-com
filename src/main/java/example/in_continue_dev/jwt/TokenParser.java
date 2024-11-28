@@ -14,6 +14,5 @@ public class TokenParser {
 
         return Optional
                 .ofNullable(authorization.startsWith("Bearer ") ? authorization.substring(7).trim() : null);
-
     }
 }

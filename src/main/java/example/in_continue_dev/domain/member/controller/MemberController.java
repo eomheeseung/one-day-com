@@ -63,23 +63,15 @@ public class MemberController {
     }
 
     @GetMapping("/api/health-check")
-    public ResponseEntity<String> checkHealth(Authentication authentication) {
+    public ResponseEntity<String> checkHealth(HttpServletRequest request) {
         log.info("health check controller call");
 
-        // 인증된 사용자 정보 로그 기록 (필요 시)
-        if (authentication != null && authentication.isAuthenticated()) {
+        Optional<String> optionalS = tokenParser.tokenParse(request);
 
-            /*
-            TODO
-             principal은 어떤 객체타입이 있는지
-             여기서는 UserDetails로 객체타입을 바꿈.
-             UserDetails 객체 안에는 어떠한 값들이 있는지
-             */
-            Object principal = authentication.getPrincipal();
-            String username = principal instanceof UserDetails ? ((UserDetails) principal).getUsername() : principal.toString();
-            log.info("Authenticated user: {}", username);
-        } else {
-            log.warn("No authenticated user found.");
+        if (optionalS.isPresent()) {
+            log.info(optionalS.get());
+        }else{
+            return ResponseEntity.notFound().build();
         }
 
         return ResponseEntity.ok("ok");

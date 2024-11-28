@@ -33,7 +33,14 @@ public class JwtValidHandler extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+        if (request.getRequestURI().contains("/swagger-ui/**") ||
+                request.getRequestURI().contains("http://localhost:8080/login/oauth2/**")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         Optional<String> optionalParseToken = tokenParser.tokenParse(request);
+
 
         if (optionalParseToken.isPresent()) {
             try {
@@ -91,6 +98,14 @@ public class JwtValidHandler extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response); // 필터 체인 계속 진행
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+
+        return path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs") ||
+                path.startsWith("/swagger-resources") || path.startsWith("/webjars");
     }
 
 }

@@ -22,7 +22,7 @@ public class JwtService {
 
 
     // JWT 생성 (Access Token)
-    public String generateAccessToken(String email)  {
+    public String generateAccessToken(String email) {
         Date accessExpireDate = Date.from(Instant.now().plus(jwtProperties.getExpiration(), ChronoUnit.MINUTES));
 
         return Jwts.builder()
@@ -30,14 +30,16 @@ public class JwtService {
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(accessExpireDate)
-                .signWith(generateKey(jwtProperties.getSecret()),SignatureAlgorithm.HS256)
+                // secret key를 sign 하는데 기존의 method는 deprecated 되었기 때문에 key 객체를 생성해서 사용한다.
+                .signWith(generateKey(jwtProperties.getSecret()), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     // JWT 생성 (Refresh Token)
 
     public String generateRefreshToken() {
-        Date refreshExpireTime = Date.from(Instant.now().plus(jwtProperties.getRefreshExpiration(), ChronoUnit.MINUTES));
+        Date refreshExpireTime = Date.from(Instant.now().plus(jwtProperties.getRefreshExpiration(),
+                ChronoUnit.MINUTES));
 
 
         return Jwts.builder()
@@ -113,6 +115,9 @@ public class JwtService {
         return tokens;
     }
 
+    /*
+    secret을 key 객체로 만들어서 반환한다.
+     */
     private Key generateKey(String secret) {
         return new SecretKeySpec(secret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
     }
@@ -123,6 +128,4 @@ public class JwtService {
                 .setSigningKey(jwtProperties.getSecret().getBytes())
                 .build();
     }
-
-
 }

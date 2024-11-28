@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Slf4j
 public class TestController {
 
-    @GetMapping("/home")
+    @GetMapping("/index")
     public String home() {
         log.info("home call");
-        return "homeView";
+        return "index.html";
     }
 }

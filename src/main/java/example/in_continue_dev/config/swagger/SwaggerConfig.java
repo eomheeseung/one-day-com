@@ -1,24 +1,29 @@
 package example.in_continue_dev.config.swagger;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.servers.Server;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
-@OpenAPIDefinition(
-    servers = @Server(url = "http://localhost:8080", description = "Local server")
-)
-public class SwaggerConfig {
 
+@Configuration
+public class SwaggerConfig {
+    // Swagger UI에서 OAuth2 인증을 설정하는 클래스
     @Bean
-    public OpenAPI openAPI() {
+    public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .info(new Info()
-                        .title("develop docs")
-                        .description("develop에 대한 docs")
-                        .version("v1.0"));
+                .components(new Components()
+                        .addSecuritySchemes("JWT",
+                                new SecurityScheme()
+                                        .type(SecurityScheme.Type.HTTP)  // HTTP 방식으로 Bearer Token을 사용
+                                        .scheme("bearer")  // Bearer Token 방식 사용
+                                        .bearerFormat("JWT")  // JWT 형식의 Bearer Token
+                        )
+                )
+                .addSecurityItem(new SecurityRequirement().addList("JWT"));  // JWT를 보안 요구사항에 추가
     }
+
+
 }

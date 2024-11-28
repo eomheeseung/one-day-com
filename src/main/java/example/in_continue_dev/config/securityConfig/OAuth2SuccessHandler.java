@@ -64,15 +64,22 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         }
 
         // JWT 발급
-        String accessToken = jwtService.generateAccessToken(email);
-        String refreshToken = jwtService.generateRefreshToken();
+        String appAccessToken = jwtService.generateAccessToken(email);
+        String appRefreshToken = jwtService.generateRefreshToken();
 
         Map<String, String> tokens = new HashMap<>();
-        tokens.put("accessToken", accessToken);
-        tokens.put("refreshToken", refreshToken);
+        tokens.put("accessToken", appAccessToken);
+        tokens.put("refreshToken", appRefreshToken);
+
+        log.info("자체 어플리케이션 access token 발급:{}", appAccessToken);
+        log.info("자체 어플리케이션 refresh token 발급:{}", appRefreshToken);
 
 
-        response.sendRedirect("http://localhost:3000/?accessToken=" + accessToken + "&refreshToken=" + refreshToken);
+//        response.sendRedirect("http://localhost:3000/?accessToken=" + accessToken + "&refreshToken=" + refreshToken);
+//        response.sendRedirect("http://localhost:8080/swagger-ui/");
+
+//        response.sendRedirect("http://localhost:8080/index");
+
     }
 }
 

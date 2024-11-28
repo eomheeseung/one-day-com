@@ -27,9 +27,16 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private static final String[] NOCHECK = new String[]{"/login/**",
-            "/oauth2/**", "/signIn", "/signUp",
-            "/api/Oauth2InputForm"};
+    private static final String[] NOCHECKURI = new String[]{
+            "/login/**",
+            "/oauth2/**",
+            "/signIn", "/signUp",
+            "/swagger-ui/**",
+            "/swagger-resources/**",
+            "/v3/api-docs/**", // OpenAPI 문서
+            "/webjars/**",     // Swagger UI 리소스
+            "/api/Oauth2InputForm"
+    };
     private final Oauth2Service oauth2Service;
     private final OAuth2AuthorizedClientService authorizedClientService;
     private final MemberRepository memberRepository;
@@ -41,17 +48,15 @@ public class SecurityConfig {
         return httpSecurity
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 // session policy
                 .sessionManagement(customizer -> customizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(configurator ->
-                        configurator.requestMatchers(NOCHECK).permitAll()
+                        configurator.requestMatchers(NOCHECKURI).permitAll()
                                 .anyRequest().authenticated())
                 .oauth2Login(customizer -> customizer.successHandler(loginSuccessFilter())
 //                        .authorizationEndpoint(authorizationEndpointCustomizer ->
 //                                authorizationEndpointCustomizer.baseUri("/oauth2/authorization/**"))
                 )
-
                 .formLogin(configurator -> configurator
                         .loginPage("/signIn")
                         .permitAll()
@@ -82,7 +87,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // React 앱의 도메인 설정
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8080")); // React 앱의 도메인 설정
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
